@@ -172,6 +172,8 @@ UPROGS=\
 	_grep\
 	_init\
 	_kill\
+        _lab1_test\
+        _lab2_test\
 	_ln\
 	_ls\
 	_mkdir\
@@ -181,7 +183,6 @@ UPROGS=\
 	_usertests\
 	_wc\
 	_zombie\
-        _lab1_test\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -252,6 +253,7 @@ EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
 	lab1_test.c\
+        lab2_test.c\
         printf.c umalloc.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
