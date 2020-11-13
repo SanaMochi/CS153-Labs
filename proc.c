@@ -88,6 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->prior_val = 10; //set default priority to 10
 
   release(&ptable.lock);
 
@@ -199,6 +200,7 @@ fork(void)
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
+//  np->prior_val = curproc->prior_val;
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -363,7 +365,6 @@ waitS(int *status)
     }
 
     // Wait for children to exit.  (See wakeup1 call in proc_exit.)
- //   p->status = *status;
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
 }
@@ -464,6 +465,23 @@ wait(void)
   }
 }
 
+// Sets priority to int passed in
+void
+setpriority(int newpriority)
+{
+
+  struct proc *p = myproc();
+  if (newpriority > 31)
+    newpriority = 31;
+  else if (newpriority < 0)
+    newpriority = 0;
+  else
+   p->prior_val = newpriority;
+
+  // Return control to reorder
+  yield();
+}
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -488,23 +506,23 @@ scheduler(void)
 
     // Adding another function resulted in painful errors
     // Instead, implementing priority scheduling here
-    struct proc *lowest_prior_val = ptable.proc;
+    int min_prior_val = 31;
 
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if (p->state != RUNNABLE)
         continue;
-      if (lowest_prior_val->prior_val > p->prior_val)
-        lowest_prior_val = p;
+      if (p->prior_val < min_prior_val)
+        min_prior_val = p->prior_val;
      }
 
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
+      if(p->state != RUNNABLE)// && p->prior_val == min_prior_val)
         continue;
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-      if (p->prior_val == lowest_prior_val->prior_val) {
+      if (p->prior_val == min_prior_val) {
         c->proc = p;
         switchuvm(p);
         p->state = RUNNING;
