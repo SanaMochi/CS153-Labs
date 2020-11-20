@@ -496,7 +496,8 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
-  
+
+
   for(;;){
     // Enable interrupts on this processor.
     sti();
@@ -504,6 +505,8 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
 
+
+    current = ptable.proc;
     // Adding another function resulted in painful errors
     // Instead, implementing priority scheduling here
     int min_prior_val = 31;
@@ -523,17 +526,22 @@ scheduler(void)
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       if (p->prior_val == min_prior_val) {
+
         c->proc = p;
         switchuvm(p);
         p->state = RUNNING;
-
+        p->prior_val++;//aging running process  // for aging
         swtch(&(c->scheduler), p->context);
         switchkvm();
 
         // Process is done running for now.
         // It should have changed its p->state before coming back.
         c->proc = 0;
-     }
+      }
+      else{// for aging
+          if(p->prior_val>0)
+              p->prior_val--;//increase priority for not running process
+      }
     }
     release(&ptable.lock);
 
