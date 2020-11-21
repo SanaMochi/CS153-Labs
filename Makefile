@@ -174,6 +174,7 @@ UPROGS=\
 	_kill\
 	_lab1_test\
 	_lab2_test\
+	_lab2_test_aging\
 	_ln\
 	_ls\
 	_mkdir\
@@ -254,6 +255,7 @@ EXTRA=\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
 	lab1_test.c\
 	lab2_test.c\
+	lab2_test_aging.c\
 	printf.c umalloc.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
