@@ -506,7 +506,6 @@ scheduler(void)
     acquire(&ptable.lock);
 
 
-    current = ptable.proc;
     // Adding another function resulted in painful errors
     // Instead, implementing priority scheduling here
     int min_prior_val = 31;
