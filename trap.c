@@ -77,8 +77,15 @@ trap(struct trapframe *tf)
             cpuid(), tf->cs, tf->eip);
     lapiceoi();
     break;
-
-  //PAGEBREAK: 13
+/*  case T_PGFLT:
+    uint rcr2 = rcr2();
+    uint pgs = myproc()->stacksz;
+    if (rcr2 < USTACKBASE - pgs*PGSIZE && rcr2 > USTACKBASE - pgs*PGSIZE - PGSIZE) {
+      if (allocuvm(myproc()->pgdir, myproc()->stacksz, myproc()->stacksz + PGSIZE) == 0)
+        cprintf("Allocation error");
+    }
+  break;
+*/  //PAGEBREAK: 13
   default:
     if(myproc() == 0 || (tf->cs&3) == 0){
       // In kernel, it must be our mistake.
