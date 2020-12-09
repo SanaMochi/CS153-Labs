@@ -338,7 +338,7 @@ copyuvm(pde_t *pgdir, uint sz, uint stacksz)
     }
   }
   
-  for(i = USTACKBASE - PGSIZE + 1; stacksz > 0; i -= PGSIZE, stacksz--){
+  for(i = KERNBASE - PGSIZE; stacksz > 0; i -= PGSIZE, stacksz--){
     if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
       panic("copyuvm: pte should exist");
     if(!(*pte & PTE_P))

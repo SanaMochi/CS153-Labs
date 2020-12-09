@@ -64,7 +64,7 @@ exec(char *path, char **argv)
   // Make the first inaccessible.  Use the second as the user stack.
   sz = PGROUNDUP(sz);
   stacksz = KERNBASE - PGSIZE;
-  if((sz = allocuvm(pgdir, stacksz, stacksz + 2*PGSIZE)) == 0)
+  if((stacksz = allocuvm(pgdir, stacksz, stacksz + 2*PGSIZE)) == 0)
     goto bad;
   clearpteu(pgdir, (char*)(stacksz - 2*PGSIZE));
   sp = USTACKBASE;
@@ -98,7 +98,7 @@ exec(char *path, char **argv)
   oldpgdir = curproc->pgdir;
   curproc->pgdir = pgdir;
   curproc->sz = sz;
-  curproc->sz = 1;
+  curproc->stacksz = 1;
   curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
   switchuvm(curproc);
