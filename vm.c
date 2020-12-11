@@ -224,7 +224,7 @@ allocuvm(pde_t *pgdir, uint oldsz, uint newsz)
   char *mem;
   uint a;
 
-  if(newsz >= KERNBASE)
+  if(newsz > KERNBASE)
     return 0;
   if(newsz < oldsz)
     return oldsz;
@@ -337,7 +337,7 @@ copyuvm(pde_t *pgdir, uint sz, uint stacksz)
       goto bad;
     }
   }
-  
+ 
   for(i = KERNBASE - PGSIZE; stacksz > 0; i -= PGSIZE, stacksz--){
     if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
       panic("copyuvm: pte should exist");
