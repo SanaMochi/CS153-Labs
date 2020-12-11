@@ -79,13 +79,14 @@ trap(struct trapframe *tf)
     break;
   case T_PGFLT:  ; //empty statement
     uint cr2 = rcr2();
-    uint pgs = myproc()->stacksz;
-    if (/*cr2 < USTACKBASE - pgs*PGSIZE &&*/ cr2 >= USTACKBASE - pgs*PGSIZE - PGSIZE + 1) {
+    uint pgs = myproc()->stacksz + 1;
+    if (/*cr2 < USTACKBASE - pgs*PGSIZE &&*/ cr2 >= USTACKBASE - (pgs*PGSIZE + 1)) {
 //      if (allocuvm(myproc()->pgdir, myproc()->stacksz, myproc()->stacksz + PGSIZE) == 0)
       if (allocuvm(myproc()->pgdir, PGROUNDDOWN(cr2), PGROUNDDOWN(cr2) + PGSIZE) == 0) {
         cprintf("Allocation error");
         break;
       }
+
       myproc()->stacksz += 1;
       cprintf("Incremented stack size");
       break;
